@@ -3,17 +3,20 @@ name: Deploy Angular to GitHub Pages
 on:
   push:
     branches:
-      - main   # or master (check your repo)
+      - main   # make sure this matches your repo
+
+permissions:
+  contents: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -21,17 +24,18 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build Angular app
-        run: |
-          npm install -g @angular/cli
-          ng build --configuration production --base-href /AngularLab9/
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
 
+      - name: Build Angular project
+        run: ng build --configuration production --base-href /AngularLab9/
+
+      # 🔥 IMPORTANT: replace YOUR_PROJECT_NAME below
       - name: Copy index.html to 404.html
-        run: |
-          cp dist/*/index.html dist/*/404.html
+        run: cp dist/angular-lab9/index.html dist/angular-lab9/404.html
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: dist/*  # auto-detect project folder
+          folder: dist/angular-lab9
